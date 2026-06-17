@@ -1,17 +1,38 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0a0a0a;
-  --foreground: #f5f5f5;
-  --muted: #666666;
+  --bg: #0a0a0a;
   --surface: #111111;
+  --text: #f4f4f5;
+  --muted: #666666;
   --border: #1f1f1f;
   --accent: #ff8a3d;
+  --nav-bg: rgba(10, 10, 10, 0.9);
+  --grid-line: #1f1f1f;
+  --skeleton: #1a1a1a;
+  --glow: rgba(255, 138, 61, 0.07);
+  --grid-opacity: 0.35;
+  --grain-opacity: 0.04;
+}
+
+.light {
+  --bg: #f8f9fa;
+  --surface: #ffffff;
+  --text: #111111;
+  --muted: #5c5c5c;
+  --border: #e5e5e5;
+  --accent: #e86b1f;
+  --nav-bg: rgba(248, 249, 250, 0.92);
+  --grid-line: #e5e5e5;
+  --skeleton: #ececec;
+  --glow: rgba(232, 107, 31, 0.09);
+  --grid-opacity: 0.55;
+  --grain-opacity: 0.03;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--bg);
+  --color-foreground: var(--text);
   --color-muted: var(--muted);
   --color-surface: var(--surface);
   --color-border: var(--border);
@@ -25,22 +46,34 @@ html {
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 400;
+  transition: background 0.4s ease, color 0.4s ease;
 }
 
 h1,
 h2,
 h3,
-nav span:first-of-type {
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+.font-display {
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.bg-grid {
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 40px 40px;
 }
 
 .surface-card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 4px;
+  transition: background 0.4s ease, border-color 0.4s ease;
 }
 
 @keyframes fade-up {

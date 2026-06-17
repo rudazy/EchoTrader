@@ -6,14 +6,14 @@ interface TradeLogTableProps {
 
 export function TradeLogTable({ trades }: TradeLogTableProps) {
   return (
-    <section className="rounded border border-[#1f1f1f] bg-[#111111] p-4 sm:p-6 lg:col-span-12">
-      <div className="mb-4 font-mono text-[11px] uppercase tracking-[0.2em] text-[#666666]">
+    <section className="surface-card p-4 sm:p-6 lg:col-span-12">
+      <div className="mb-4 font-mono text-[11px] uppercase tracking-[0.2em] text-muted">
         Execution Log
       </div>
       <div className="overflow-x-auto">
         <table className="w-full min-w-[720px] border-collapse font-mono text-xs">
           <thead>
-            <tr className="border-b border-[#1f1f1f] text-left text-[#666666]">
+            <tr className="border-b border-border text-left text-muted">
               <th className="pb-3 pr-4 font-normal uppercase tracking-[0.12em]">Time</th>
               <th className="pb-3 pr-4 font-normal uppercase tracking-[0.12em]">Action</th>
               <th className="pb-3 pr-4 font-normal uppercase tracking-[0.12em]">Status</th>
@@ -24,25 +24,25 @@ export function TradeLogTable({ trades }: TradeLogTableProps) {
           <tbody>
             {trades.length === 0 && (
               <tr>
-                <td colSpan={5} className="py-6 text-[#666666]">
+                <td colSpan={5} className="py-6 text-muted">
                   No trades logged yet.
                 </td>
               </tr>
             )}
             {trades.map((trade, index) => (
-              <tr key={`${trade.timestamp}-${index}`} className="border-b border-[#1f1f1f]/70">
-                <td className="py-3 pr-4 text-[#666666]">
+              <tr key={`${trade.timestamp}-${index}`} className="border-b border-border/70">
+                <td className="py-3 pr-4 text-muted">
                   {new Date(trade.timestamp).toLocaleString()}
                 </td>
-                <td className="py-3 pr-4 text-[#f5f5f5]">
+                <td className="py-3 pr-4 text-foreground">
                   {trade.action.toUpperCase()} {trade.token}
                 </td>
-                <td className="py-3 pr-4 text-[#f5f5f5]">
+                <td className="py-3 pr-4 text-foreground">
                   {trade.status}
                   {trade.dry_run ? " (dry)" : ""}
                 </td>
-                <td className="py-3 pr-4 text-[#666666]">{trade.quote_summary ?? "—"}</td>
-                <td className="py-3 text-[#666666]">
+                <td className="py-3 pr-4 text-muted">{trade.quote_summary ?? "—"}</td>
+                <td className="py-3 text-muted">
                   {trade.tx_hash ?? trade.reasoning_hash ?? "—"}
                 </td>
               </tr>

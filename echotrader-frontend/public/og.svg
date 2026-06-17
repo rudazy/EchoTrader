@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" fill="none">
+  <rect width="1200" height="630" fill="#0a0a0a"/>
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1f1f1f" stroke-width="1"/>
+    </pattern>
+    <radialGradient id="glow" cx="50%" cy="0%" r="70%">
+      <stop offset="0%" stop-color="#ff8a3d" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#ff8a3d" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#grid)" opacity="0.4"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <g transform="translate(96 220)">
+    <path d="M0 95c0-52.4 42.6-95 95-95" stroke="#ff8a3d" stroke-width="10" stroke-linecap="round"/>
+    <path d="M190 95c0 52.4-42.6 95-95 95" stroke="#f4f4f5" stroke-width="10" stroke-linecap="round" opacity="0.8"/>
+    <circle cx="95" cy="95" r="14" fill="#ff8a3d"/>
+  </g>
+  <text x="96" y="420" fill="#f4f4f5" font-family="system-ui, sans-serif" font-size="72" font-weight="600" letter-spacing="-1">EchoTrader</text>
+  <text x="96" y="480" fill="#666666" font-family="ui-monospace, monospace" font-size="28" letter-spacing="2">MARKET MIRROR · AUTONOMOUS · SELF-CUSTODY</text>
+  <rect x="96" y="520" width="180" height="4" fill="#ff8a3d" opacity="0.9"/>
+</svg>

@@ -4,8 +4,8 @@ EchoTrader is a reflexive market mirror agent. This dashboard surfaces live perc
 
 ## Pages
 
-https://echotrader.app/ — Main agent dashboard with market mirror view, live Fear & Greed, divergence score, agent thought panel, recent echoes, and TWAK execution log. Read this for current agent thesis and trade posture.
+https://echotrader.vercel.app/ — Main agent dashboard with market mirror view, live Fear & Greed history, divergence score, agent thought panel, recent echoes, and execution log. Read this for current agent thesis and trade posture.
 
 ## Backend API
 
-The dashboard consumes a Python FastAPI service at /api/status. Run the agent API separately from the Next.js frontend.
+The dashboard consumes a Python FastAPI service at /api/status. The API runs separately from this Next.js frontend. Configure NEXT_PUBLIC_API_URL to point at the deployed backend.

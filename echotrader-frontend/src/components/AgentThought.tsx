@@ -17,47 +17,53 @@ export function AgentThought({ data }: AgentThoughtProps) {
   const size = data?.decision?.size_pct ?? data?.risk?.adjusted_size_pct ?? 0;
 
   return (
-    <section className="fade-up relative overflow-hidden rounded border border-[#1f1f1f] bg-[#111111] p-5 sm:p-8 lg:col-span-8">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(255,138,61,0.08),transparent_45%)]" />
+    <section className="fade-up surface-card relative overflow-hidden p-5 sm:p-8 lg:col-span-8">
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(circle at 20% 0%, var(--glow), transparent 45%)",
+        }}
+      />
       <div className="relative">
-        <div className="mb-6 flex items-center gap-3">
-          <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-[#666666]">
+        <div className="mb-6 flex flex-wrap items-center gap-3">
+          <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">
             Agent Thought
           </span>
           {data?.perception?.reasoning_hash && (
-            <span className="font-mono text-[10px] text-[#666666]">
+            <span className="font-mono text-[10px] text-muted">
               hash {data.perception.reasoning_hash}
             </span>
           )}
         </div>
-        <p className="font-sans text-lg leading-snug tracking-wide text-[#f5f5f5] sm:text-2xl md:text-[1.65rem]">
+        <p className="font-display text-lg leading-snug tracking-wide text-foreground sm:text-2xl md:text-[1.65rem]">
           &ldquo;{read}&rdquo;
         </p>
         {reasoning && (
-          <p className="mt-5 max-w-3xl font-mono text-sm leading-relaxed text-[#666666]">
+          <p className="mt-5 max-w-3xl font-mono text-sm leading-relaxed text-muted">
             {reasoning}
           </p>
         )}
-        <div className="mt-8 grid grid-cols-1 gap-4 border-t border-[#1f1f1f] pt-6 sm:grid-cols-3 sm:gap-6">
+        <div className="mt-8 grid grid-cols-1 gap-4 border-t border-border pt-6 sm:grid-cols-3 sm:gap-6">
           <div>
-            <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#666666]">
+            <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
               Action
             </div>
-            <div className="mt-1 font-mono text-xl text-[#ff8a3d]">
+            <div className="mt-1 font-mono text-xl text-accent">
               {action} {token}
             </div>
           </div>
           <div>
-            <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#666666]">
+            <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
               Size
             </div>
-            <div className="mt-1 font-mono text-xl text-[#f5f5f5]">{size}%</div>
+            <div className="mt-1 font-mono text-xl text-foreground">{size}%</div>
           </div>
           <div>
-            <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#666666]">
+            <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
               Confidence
             </div>
-            <div className="mt-1 font-mono text-xl text-[#f5f5f5]">{confidence}%</div>
+            <div className="mt-1 font-mono text-xl text-foreground">{confidence}%</div>
           </div>
         </div>
       </div>
