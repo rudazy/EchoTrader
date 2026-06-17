@@ -1,0 +1,12 @@
+---
+pid: 11416
+cwd: "C:\Users\RIKI\EchoTrader"
+command: "C:\\Users\\RIKI\\EchoTrader\\.venv\\Scripts\\python -m api.server"
+started_at: 2026-06-17T23:04:39.071Z
+running_for_ms: 770002   
+---
+INFO:     Started server process [18368]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:57829 - "GET /api/status HTTP/1.1" 200 OK

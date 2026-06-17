@@ -1,0 +1,11 @@
+# EchoTrader Dashboard
+
+EchoTrader is a reflexive market mirror agent. This dashboard surfaces live perception signals, agent reasoning, risk gate status, execution logs, and portfolio posture.
+
+## Pages
+
+https://echotrader.app/ — Main agent dashboard with market mirror view, live Fear & Greed, divergence score, agent thought panel, recent echoes, and TWAK execution log. Read this for current agent thesis and trade posture.
+
+## Backend API
+
+The dashboard consumes a Python FastAPI service at /api/status. Run the agent API separately from the Next.js frontend.
