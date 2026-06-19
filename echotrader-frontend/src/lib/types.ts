@@ -41,6 +41,11 @@ export interface PerceptionSnapshot {
   reasoning_hash: string | null;
   btc_dominance: number | null;
   on_chain_netflow: string | null;
+  raw?: {
+    global_metrics?: {
+      total_market_cap?: number;
+    };
+  };
 }
 
 export interface ReasonerSnapshot {

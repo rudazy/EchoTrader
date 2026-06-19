@@ -36,6 +36,10 @@ memory/echo_log.jsonl
 # Internal session files
 tasks/
 
+# IDE / agent harness (not part of EchoTrader)
+mcps/
+terminals/
+
 # OS
 .DS_Store
 Thumbs.db

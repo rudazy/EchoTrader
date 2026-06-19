@@ -1,0 +1,10 @@
+echotrader-frontend/node_modules
+echotrader-frontend/.next
+.venv
+__pycache__
+.git
+tasks
+memory
+logs
+tests
+mcps

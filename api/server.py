@@ -21,6 +21,7 @@ app = FastAPI(title="EchoTrader API", version="0.1.0")
 _default_origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "https://echotrader.vercel.app",
 ]
 _extra_origins = [
     origin.strip()
@@ -194,10 +195,11 @@ def status(refresh: bool = False) -> dict[str, Any]:
 def main() -> None:
     import uvicorn
 
+    port = int(os.getenv("PORT", "8000"))
     uvicorn.run(
         "api.server:app",
         host="0.0.0.0",
-        port=8000,
+        port=port,
         reload=False,
     )
 

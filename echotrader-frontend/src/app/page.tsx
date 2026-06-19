@@ -1,10 +1,13 @@
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
 import { AgentThought } from "@/components/AgentThought";
 import { DashboardNav } from "@/components/DashboardNav";
+import { HeroSection } from "@/components/HeroSection";
 import { HistoryChart } from "@/components/HistoryChart";
 import { LiveSignals } from "@/components/LiveSignals";
+import { MarketTicker } from "@/components/MarketTicker";
 import { PortfolioPanel } from "@/components/PortfolioPanel";
 import { RecentEchoes } from "@/components/RecentEchoes";
 import {
@@ -12,7 +15,6 @@ import {
   ChartSkeleton,
   PanelSkeleton,
   SignalsSkeleton,
-  Skeleton,
 } from "@/components/Skeleton";
 import { TradeLogTable } from "@/components/TradeLogTable";
 import { fetchStatus } from "@/lib/api";
@@ -26,9 +28,7 @@ export default function EchoTraderDashboard() {
 
   const load = useCallback(async (refresh = false) => {
     try {
-      if (refresh) {
-        setRefreshing(true);
-      }
+      if (refresh) setRefreshing(true);
       const status = await fetchStatus(refresh);
       setData(status);
       setError(null);
@@ -57,47 +57,35 @@ export default function EchoTraderDashboard() {
       />
 
       <main className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6 sm:py-10 md:px-8 md:py-12">
-        <header className="mb-8 flex flex-col gap-5 sm:mb-10 sm:gap-6 md:flex-row md:items-end md:justify-between">
-          <div>
-            <h1 className="font-display text-3xl font-medium tracking-wide text-foreground sm:text-4xl md:text-5xl">
-              Market Mirror
-            </h1>
-            <p className="mt-2 font-mono text-xs text-muted sm:text-sm md:text-base">
-              Autonomous · Contrarian · Disciplined
-            </p>
-          </div>
-          <div className="text-left md:text-right">
-            <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted">
-              Current Regime
-            </div>
-            {showSkeleton ? (
-              <Skeleton className="mt-2 h-8 w-40 md:ml-auto" />
-            ) : (
-              <div className="mt-1 font-mono text-xl text-accent sm:text-2xl md:text-3xl">
-                {data?.regime_label ?? "—"}
-              </div>
-            )}
-            <button
-              type="button"
-              onClick={() => load(true)}
-              disabled={refreshing || loading}
-              className="mt-4 w-full rounded border border-border px-3 py-2 font-mono text-[11px] uppercase tracking-[0.12em] text-muted transition hover:border-accent/50 hover:text-foreground disabled:opacity-50 sm:w-auto"
+        <HeroSection
+          data={data}
+          loading={loading}
+          refreshing={refreshing}
+          onRefresh={() => load(true)}
+        />
+
+        {!showSkeleton && <MarketTicker data={data} />}
+
+        <AnimatePresence>
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="panel-card mb-6 overflow-hidden"
             >
-              {refreshing ? "Refreshing..." : "Refresh Agent"}
-            </button>
-          </div>
-        </header>
+              <div className="px-4 py-3 font-mono text-xs text-muted sm:text-sm">
+                API unreachable ({error}). Start backend:{" "}
+                <code className="text-accent">python -m api.server</code>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {error && (
-          <div className="surface-card mb-6 px-4 py-3 font-mono text-xs text-muted sm:text-sm">
-            API unreachable ({error}). Start backend:{" "}
-            <code className="text-foreground">python -m api.server</code>
-          </div>
-        )}
-
-        <div
-          className={`grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-12 ${
-            refreshing ? "opacity-80 transition-opacity" : ""
+        <motion.div
+          layout
+          className={`grid grid-cols-1 gap-5 sm:gap-6 lg:grid-cols-12 ${
+            refreshing ? "opacity-75 transition-opacity duration-300" : ""
           }`}
         >
           {showSkeleton ? (
@@ -122,7 +110,7 @@ export default function EchoTraderDashboard() {
               <TradeLogTable trades={data?.recent_trades ?? []} />
             </>
           )}
-        </div>
+        </motion.div>
       </main>
     </div>
   );

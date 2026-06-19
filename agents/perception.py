@@ -373,5 +373,5 @@ class PerceptionLayer:
         }
 
 
-# Alias for quick imports / hackathon-style wiring
+# Alias for quick imports
 PerceptionAgent = PerceptionLayer

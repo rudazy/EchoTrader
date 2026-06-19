@@ -9,10 +9,20 @@ export function SiteBackground() {
         className="bg-grid absolute inset-0 transition-opacity duration-500"
         style={{ opacity: "var(--grid-opacity)" }}
       />
+      <div className="contour-lines absolute inset-0 opacity-60" />
+      <div
+        className="animate-float-orb absolute -left-32 top-1/4 h-[420px] w-[420px] rounded-full blur-[100px]"
+        style={{ background: "var(--orb-1)" }}
+      />
+      <div
+        className="animate-float-orb-delay absolute -right-24 bottom-1/4 h-[360px] w-[360px] rounded-full blur-[90px]"
+        style={{ background: "var(--orb-2)" }}
+      />
       <div
         className="absolute inset-0"
         style={{
-          background: "radial-gradient(ellipse at 50% 0%, var(--glow), transparent 70%)",
+          background:
+            "radial-gradient(ellipse 80% 50% at 50% -10%, var(--glow), transparent 65%)",
         }}
       />
       <div
