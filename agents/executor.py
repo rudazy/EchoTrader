@@ -5,22 +5,20 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
-import os
-import subprocess
 from datetime import datetime, timezone
 from typing import Any
 
+from agents.twak_client import TwakClient
 from agents.types import RiskAssessment, TradeAction, TradeDecision
 from config.settings import Settings
 
 logger = logging.getLogger(__name__)
 
-TWAK_TIMEOUT_SECONDS = 30
-
 
 class Executor:
     def __init__(self, settings: Settings | None = None) -> None:
         self.settings = settings or Settings()
+        self.twak = TwakClient(self.settings)
 
     def get_swap_quote(
         self,
@@ -30,34 +28,19 @@ class Executor:
         chain: str | None = None,
     ) -> dict[str, Any]:
         """Fetch a TWAK swap quote. Works in dry-run — no wallet password required."""
-        amount = amount or self.settings.twak_quote_amount
-        chain = chain or self.settings.twak_chain
-        cmd = [
-            "twak",
-            "swap",
-            amount,
-            from_token,
-            to_token,
-            "--chain",
-            chain,
-            "--slippage",
-            str(self.settings.default_slippage_pct),
-            "--quote-only",
-            "--json",
-        ]
-        quote = self._run_twak(cmd)
-        success = "error" not in quote and "errorCode" not in quote
-        result: dict[str, Any] = {
-            "success": success,
+        result = self.twak.get_swap_quote(from_token, to_token, amount, chain)
+        payload: dict[str, Any] = {
+            "success": result["success"],
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "from_token": from_token,
             "to_token": to_token,
-            "amount": amount,
-            "chain": chain,
+            "amount": amount or self.settings.twak_quote_amount,
+            "chain": chain or self.settings.twak_chain,
             "dry_run": self.settings.dry_run,
         }
-        if success:
-            result["quote"] = quote
+        if result["success"]:
+            quote = result["quote"] or {}
+            payload["quote"] = quote
             logger.info(
                 "TWAK quote: %s -> %s via %s",
                 quote.get("input"),
@@ -65,10 +48,10 @@ class Executor:
                 quote.get("provider"),
             )
         else:
-            result["error"] = quote.get("error", quote)
-            result["error_code"] = quote.get("errorCode", "UNKNOWN_ERROR")
-            logger.warning("TWAK quote failed: %s", result["error"])
-        return result
+            payload["error"] = result.get("error")
+            payload["error_code"] = result.get("error_code", "UNKNOWN_ERROR")
+            logger.warning("TWAK quote failed: %s", payload["error"])
+        return payload
 
     def execute_trade(self, decision: TradeDecision | dict[str, Any]) -> dict[str, Any]:
         """Execute a trade from a reasoner decision or dict. Respects DRY_RUN."""
@@ -122,6 +105,12 @@ class Executor:
             self._log_trade(result)
             return result
 
+        if self.settings.twak_enabled and not self.twak.credentials_configured():
+            result["status"] = "twak_unconfigured"
+            result["error"] = "Set TWAK_ACCESS_ID and TWAK_HMAC_SECRET"
+            self._log_trade(result)
+            return result
+
         quote = self._twak_quote(decision, risk)
         result["quote"] = quote
 
@@ -138,6 +127,12 @@ class Executor:
             self._log_trade(result)
             return result
 
+        if not self.twak.wallet_password_configured():
+            result["status"] = "wallet_password_missing"
+            result["error"] = "TWAK_WALLET_PASSWORD required for live swaps"
+            self._log_trade(result)
+            return result
+
         swap = self._twak_swap(decision, risk)
         result["swap"] = swap
         result["executed"] = "error" not in swap and "errorCode" not in swap
@@ -146,6 +141,7 @@ class Executor:
         if result["executed"]:
             result["tx_hash"] = swap.get("hash")
             result["explorer"] = swap.get("explorer")
+            result["quote_summary"] = self._format_quote(quote)
         self._log_trade(result)
         return result
 
@@ -166,55 +162,12 @@ class Executor:
 
     def _twak_swap(self, decision: TradeDecision, risk: RiskAssessment) -> dict[str, Any]:
         from_token, to_token = self._resolve_pair(decision)
-        cmd = [
-            "twak",
-            "swap",
-            self.settings.twak_quote_amount,
-            from_token,
-            to_token,
-            "--chain",
-            self.settings.twak_chain,
-            "--slippage",
-            str(self.settings.default_slippage_pct),
-            "--json",
-        ]
-        return self._run_twak(cmd)
-
-    def _run_twak(self, cmd: list[str]) -> dict[str, Any]:
-        env = os.environ.copy()
-        if self.settings.twak_access_id:
-            env["TWAK_ACCESS_ID"] = self.settings.twak_access_id
-        if self.settings.twak_hmac_secret:
-            env["TWAK_HMAC_SECRET"] = self.settings.twak_hmac_secret
-        if self.settings.twak_wallet_password:
-            env["TWAK_WALLET_PASSWORD"] = self.settings.twak_wallet_password
-
-        try:
-            proc = subprocess.run(
-                cmd,
-                capture_output=True,
-                text=True,
-                check=False,
-                timeout=TWAK_TIMEOUT_SECONDS,
-                env=env,
-            )
-            stdout = proc.stdout.strip()
-            if stdout:
-                try:
-                    return json.loads(stdout)
-                except json.JSONDecodeError:
-                    return {"quote": stdout, "raw": True}
-            stderr = proc.stderr.strip() or "empty stdout"
-            return {"error": stderr, "errorCode": "UNKNOWN_ERROR", "returncode": proc.returncode}
-        except FileNotFoundError:
-            return {
-                "error": "twak CLI not found — install via https://agent-kit.trustwallet.com/",
-                "errorCode": "CLI_NOT_FOUND",
-            }
-        except subprocess.TimeoutExpired:
-            return {"error": "TWAK command timed out", "errorCode": "TIMEOUT"}
-        except json.JSONDecodeError as exc:
-            return {"error": str(exc), "errorCode": "PARSE_ERROR"}
+        return self.twak.execute_swap(
+            from_token=from_token,
+            to_token=to_token,
+            amount=self.settings.twak_quote_amount,
+            chain=self.settings.twak_chain,
+        )
 
     def _resolve_pair(self, decision: TradeDecision) -> tuple[str, str]:
         token = (decision.token or "BNB").upper()
@@ -227,7 +180,7 @@ class Executor:
     @staticmethod
     def _format_quote(quote: dict[str, Any]) -> str:
         if quote.get("raw"):
-            return str(quote.get("quote", quote))
+            return str(quote.get("output", quote.get("quote", quote)))
         parts = [
             quote.get("input"),
             "->",

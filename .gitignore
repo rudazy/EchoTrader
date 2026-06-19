@@ -37,6 +37,7 @@ memory/echo_log.jsonl
 tasks/
 
 # IDE / agent harness (not part of EchoTrader)
+agent-tools/
 mcps/
 terminals/
 

@@ -56,6 +56,14 @@ $requiredKeys = @(
     "DRY_RUN",
     "CORS_ORIGINS"
 )
+$twakKeys = @(
+    "TWAK_ENABLED",
+    "TWAK_ACCESS_ID",
+    "TWAK_HMAC_SECRET",
+    "TWAK_WALLET_PASSWORD",
+    "TWAK_CHAIN",
+    "TWAK_QUOTE_AMOUNT"
+)
 
 $vars = @{}
 Get-Content $envFile | ForEach-Object {
@@ -88,7 +96,8 @@ if ($statusText -match "Service: None") {
 }
 
 Write-Host "Setting Railway variables..."
-foreach ($key in $requiredKeys) {
+foreach ($key in ($requiredKeys + $twakKeys)) {
+    if (-not $vars.ContainsKey($key)) { continue }
     $val = $vars[$key]
     $val | & $Railway variable set --stdin $key 2>&1 | Out-Null
     if ($LASTEXITCODE -ne 0) {

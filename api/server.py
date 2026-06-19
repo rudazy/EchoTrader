@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 from datetime import datetime, timezone
 from pathlib import Path
@@ -11,10 +12,14 @@ from typing import Any
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from agents.executor import Executor
 from agents.perception import PerceptionLayer
 from agents.reasoner import Reasoner
 from agents.risk_guard import RiskGuard
+from agents.twak_client import TwakClient
 from config.settings import get_settings
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI(title="EchoTrader API", version="0.1.0")
 
@@ -77,9 +82,61 @@ def _fear_label(value: int | None) -> str:
     return "EXTREME GREED"
 
 
+@app.on_event("startup")
+def bootstrap_twak() -> None:
+    settings = get_settings()
+    issues = settings.validate_twak()
+    if issues:
+        logger.warning("TWAK configuration incomplete: %s", ", ".join(issues))
+    if not settings.twak_enabled:
+        return
+    if not (settings.twak_access_id and settings.twak_hmac_secret):
+        return
+    client = TwakClient(settings)
+    wallet = client.ensure_wallet()
+    logger.info(
+        "TWAK wallet bootstrap: %s",
+        wallet.get("action", wallet.get("reason", wallet.get("error", "skipped"))),
+    )
+    health = client.health_check()
+    logger.info(
+        "TWAK ready — cli=%s creds=%s wallet=%s",
+        health.get("cli_available"),
+        health.get("credentials_configured"),
+        (health.get("wallet") or {}).get("ready"),
+    )
+
+
 @app.get("/api/health")
 def health() -> dict[str, str]:
     return {"status": "ok", "timestamp": datetime.now(timezone.utc).isoformat()}
+
+
+@app.get("/api/twak/status")
+def twak_status() -> dict[str, Any]:
+    """TWAK CLI, auth, and wallet readiness for BSC execution."""
+    settings = get_settings()
+    client = TwakClient(settings)
+    payload = client.health_check()
+    payload["config_issues"] = settings.validate_twak()
+    payload["timestamp"] = datetime.now(timezone.utc).isoformat()
+    return payload
+
+
+@app.get("/api/twak/quote")
+def twak_quote(
+    from_token: str = "USDT",
+    to_token: str = "BNB",
+    amount: str | None = None,
+) -> dict[str, Any]:
+    """Live TWAK swap quote on configured chain (default BSC)."""
+    settings = get_settings()
+    return Executor(settings).get_swap_quote(
+        from_token=from_token.upper(),
+        to_token=to_token.upper(),
+        amount=amount,
+        chain=settings.twak_chain,
+    )
 
 
 @app.get("/api/status")

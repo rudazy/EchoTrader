@@ -28,12 +28,14 @@ class Settings(BaseSettings):
     x402_wallet_private_key: str = ""
     x402_enabled: bool = False
 
-    # TWAK
+    # TWAK (Trust Wallet Agent Kit — @trustwallet/cli)
+    twak_enabled: bool = True
     twak_access_id: str = ""
     twak_hmac_secret: str = ""
     twak_wallet_password: str = ""
     twak_chain: str = "bsc"
     twak_quote_amount: str = "10"
+    twak_cli: str = ""  # empty = auto-detect twak or npx @trustwallet/cli
 
     # BNB Agent SDK
     bnb_agent_private_key: str = ""
@@ -84,6 +86,19 @@ class Settings(BaseSettings):
             raise RuntimeError(
                 "Missing required environment variables: " + ", ".join(missing)
             )
+
+    def validate_twak(self) -> list[str]:
+        """Return TWAK configuration warnings/errors."""
+        issues: list[str] = []
+        if not self.twak_enabled:
+            return issues
+        if not self.twak_access_id:
+            issues.append("TWAK_ACCESS_ID")
+        if not self.twak_hmac_secret:
+            issues.append("TWAK_HMAC_SECRET")
+        if not self.dry_run and not self.twak_wallet_password:
+            issues.append("TWAK_WALLET_PASSWORD (required when DRY_RUN=false)")
+        return issues
 
 
 @lru_cache
