@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Activity, Shield } from "lucide-react";
+import { Shield } from "lucide-react";
+import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface DashboardNavProps {
@@ -20,25 +21,7 @@ export function DashboardNav({ online, dryRun, chain }: DashboardNavProps) {
       style={{ backgroundColor: "var(--nav-bg)" }}
     >
       <div className="mx-auto flex max-w-[1200px] flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-4 md:px-8">
-        <div className="flex items-center gap-3">
-          <div className="relative flex h-9 w-9 items-center justify-center rounded border border-border bg-surface">
-            {online && (
-              <span
-                className="absolute inset-0 rounded border border-accent/30"
-                style={{ animation: "pulse-ring 2s ease-out infinite" }}
-              />
-            )}
-            <Activity className="relative h-4 w-4 text-accent" strokeWidth={1.75} />
-          </div>
-          <div>
-            <span className="font-display text-xl font-medium tracking-wide text-foreground">
-              EchoTrader
-            </span>
-            <div className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted">
-              Market Mirror v0.1
-            </div>
-          </div>
-        </div>
+        <Logo online={online} />
         <div className="flex flex-wrap items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em] sm:gap-4 sm:text-xs">
           <div className="stat-pill flex items-center gap-2 rounded px-3 py-1.5 text-foreground">
             <span

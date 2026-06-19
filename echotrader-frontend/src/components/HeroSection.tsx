@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Loader2, Radio, RefreshCw } from "lucide-react";
 import { FearGreedGauge } from "@/components/FearGreedGauge";
+import { LogoMark } from "@/components/Logo";
 import type { DashboardStatus } from "@/lib/types";
 
 interface HeroSectionProps {
@@ -45,13 +46,20 @@ export function HeroSection({ data, loading, refreshing, onRefresh }: HeroSectio
       <div className="relative px-5 py-8 sm:px-8 sm:py-10 md:px-10 md:py-12">
         <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex-1">
-            <div className="mb-3 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted">
-              <Radio className="h-3 w-3 text-accent" strokeWidth={2} />
-              Autonomous Market Mirror
+            <div className="mb-4 flex items-center gap-3">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded border border-border bg-surface p-2 sm:h-14 sm:w-14">
+                <LogoMark size={40} className="h-full w-full" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted">
+                  <Radio className="h-3 w-3 text-accent" strokeWidth={2} />
+                  Autonomous Market Mirror
+                </div>
+                <h1 className="font-display text-3xl font-medium tracking-wide sm:text-4xl md:text-5xl">
+                  <span className="text-gradient">EchoTrader</span>
+                </h1>
+              </div>
             </div>
-            <h1 className="font-display text-4xl font-medium tracking-wide sm:text-5xl md:text-6xl">
-              <span className="text-gradient">Market Mirror</span>
-            </h1>
             <p className="mt-3 max-w-lg font-mono text-sm leading-relaxed text-muted">
               Perceive. Reason. Execute with discipline — the agent reads fear,
               divergence, and flow before every move.

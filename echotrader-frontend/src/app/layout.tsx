@@ -24,8 +24,12 @@ export const metadata: Metadata = {
   description:
     "Autonomous reflexive trading agent dashboard — perception, reasoning, and self-custody execution on BNB Chain.",
   icons: {
-    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
-    apple: [{ url: "/apple-icon.svg", type: "image/svg+xml" }],
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/icon.svg", sizes: "32x32" },
+    ],
+    apple: [{ url: "/apple-icon.svg", type: "image/svg+xml", sizes: "180x180" }],
+    shortcut: ["/icon.svg"],
   },
   openGraph: {
     title: "EchoTrader | Market Mirror",
